@@ -1,23 +1,40 @@
 #include <iostream>
-#include <vector>
+using namespace std;
 
-template <class T>
-bool greater(const T &x, const T &y)
+void quick_sort(int q[], int l, int r)
 {
-    return x > y;
-}
-
-template <class T>
-bool less(const T &x, const T &y)
-{
-    return x < y;
-}
-
-template <class T>
-void quick_sort(std::vector<T> arr, typename std::vector<T>::iterator left, typename std::vector<T>::iterator right, bool (*t)(const T &, const T &))
-{
-    if (arr.size() == 0)
+    if (l >= r)
     {
         return;
     }
+    int i = l - 1, j = r + 1, mid = q[(l + r) >> 1];
+    while (i < j)
+    {
+        do
+            i++;
+        while (q[i] < mid);
+        do
+            j--;
+        while (q[j] > mid);
+        if (i < j)
+        {
+            swap(q[i], q[j]);
+        }
+    }
+    quick_sort(q, l, j);
+    quick_sort(q, j + 1, r);
+}
+
+int main()
+{
+    int a[10] = {0, 10, 9, 55, 49, 3, 2, 19, -1, 99};
+
+    quick_sort(a, 0, 9);
+
+    for (int i = 0; i < 10; i++)
+    {
+        cout << a[i] << " ";
+    }
+
+    return 0;
 }
