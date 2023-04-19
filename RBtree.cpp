@@ -93,3 +93,4 @@ void RBtree::rightRotate(RBtree_node *right_node) {
     left_node->right = right_node;
 }
 
+test 
