@@ -1,94 +1,125 @@
-#include <iostream>
-#include <string>
-#include <vector>
+#include <stdexcept>
 
-using Color = bool;
-using KEY_TYPE = int;
-using VALUE_TYPE = int;
+#include "RBtree.h"
 
-static const Color red = false;
-static const Color black = true;
+template<typename KeyType,typename ValueType>
+RBtree<KeyType,ValueType>::RBtree(){}
 
-class RBtree_node {
-public:
-    Color color;
-    RBtree_node *parent;
-    RBtree_node *left;
-    RBtree_node *right;
-
-    KEY_TYPE key;
-    VALUE_TYPE value;
-    RBtree_node(Color color_) : color(color_), parent(nullptr), left(nullptr), right(nullptr),key(-1e5) {}
-    RBtree_node(Color color_, KEY_TYPE key_, RBtree_node *nil) : color(color_), parent(nil), left(nil), right(nil), key(key_) {}
-};
-
-class RBtree {
-private:
-    RBtree_node *root;
-    RBtree_node *nil;
-
-public:
-    RBtree() {
-        nil = new RBtree_node(black);
-        root = nil;
+template<typename KeyType,typename ValueType>
+RBtree<KeyType,ValueType>::~RBtree()
+{
+    if(this->root != nullptr){
+        this->cleanup(this->root);
+        this->root = nullptr;
     }
-
-    void leftRotate(RBtree_node *left_node);
-
-    void rightRotate(RBtree_node *right_node);
-
-    void insertNode(KEY_TYPE key);
-
-    void fixInsert(RBtree_node *node);
-
-    RBtree_node *searchNode(KEY_TYPE key);
-
-    RBtree_node *successor(RBtree_node *node);
-
-    void deteleNode(KEY_TYPE key);
-
-    void fixDelete(RBtree_node *node);
-
-    void print();
-
-    void printMiddle(RBtree_node *node);
-};
-
-void RBtree::leftRotate(RBtree_node *left_node) {
-    RBtree_node *right_node = left_node->right;
-    left_node->right = right_node->left;
-
-    if (right_node->left != nil) {
-        left_node->right->parent = left_node;
-    }
-    right_node->parent = left_node->parent;
-    if (left_node == root) {
-        root = right_node;
-    } else if (left_node == left_node->parent->left) {
-        left_node->parent->left = right_node;
-    } else {
-        left_node->parent->right = right_node;
-    }
-
-    left_node->parent = right_node;
-    right_node->left = left_node;
 }
 
-void RBtree::rightRotate(RBtree_node *right_node) {
-    RBtree_node *left_node = right_node->left;
-    right_node->left = left_node->right;
+template<typename KeyType,typename ValueType>
+void RBtree<KeyType,ValueType>::clear()
+{
+    if(this->root != nullptr){
+        this->cleanup(this->root);
+        this->root = nullptr;
+    }
+}
 
-    if (left_node->right != nil) {
-        right_node->left->parent = right_node;
+template<typename KeyType,typename ValueType>
+bool RBtree<KeyType,ValueType>::hasKey(const KeyType& key)
+{
+    Node *node = this->root;
+    while(node != nullptr){
+        if(key == node->key){
+            return true;
+        }
+        else if(key < node->key){
+            node = node->left;
+        }
+        else{
+            node = node->right;
+        }
     }
-    left_node->parent = right_node->parent;
-    if (right_node == root) {
-        root = left_node;
-    } else if (right_node == right_node->parent->right) {
-        right_node->parent->right = left_node;
-    } else {
-        right_node->parent->right = right_node;
+    return false;
+}
+
+
+template<typename KeyType,typename ValueType>
+ValueType& RBtree<KeyType,ValueType>::getValue(const KeyType& key)
+{
+    Node* node = root;
+    while(node != nullptr){
+        if(key == node->key){
+            return node->data;
+        }
+        else if(key < node->key){
+            node = node->left;
+        }
+        else{
+            node = node->right;
+        }
     }
-    right_node->parent = left_node;
-    left_node->right = right_node;
+    throw std::runtime_error("can not find the key");
+}
+
+template<typename KeyType,typename ValueType>
+RBtree<KeyType,ValueType>& RBtree<KeyType,ValueType>::setValue(const KeyType& key,const ValueType& Value)
+{
+    Node *node = root;
+    Node *parent = nullptr;
+    // return directly if value exists
+    while(node != nullptr){
+        if(key == node->key){
+            node->value = value;
+            return *this;
+        }
+        else{
+            parent = node;
+            node = (key < node->key ? node->left : node->right);
+        }
+    }
+    // create new node
+    node = new Node;
+    node->parent = parent;
+    node->left = nullptr;
+    node->right = nullptr;
+    node->key = key;
+    node->value = value;
+    // set node as root if tree is NULL
+    if(parent == nullptr){
+        node->color = NodeColor::BLACK;
+        this->root = node;
+        return *this;
+    }
+    // 
+    node->color = NodeColor::RED;
+    if(key < parent->key){
+        parent->left = node;
+    }else{
+        parent->right = node;
+    }
+    this->fixColorConflict(node);
+    return *this;
+}
+
+template<typename KeyType,typename ValueType>
+RBtree<KeyType,ValueType>& RBtree<KeyType,ValueType>::removeKey(const KeyType& key)
+{
+    Node *node = root;
+    while(node != nullptr){
+        if(key == node->key){
+            break;
+        }
+        else{
+            node = (key < node->key ? node->left : node->right);
+        }
+    }
+
+    if(node == nullptr){
+        throw std::runtime_error("can not find key");
+    }
+    // search replace node to delete
+    while(node->left != nullptr || node->right != nullptr){
+        if(node->right != nullptr){
+            
+        }
+    }
 }
