@@ -1,7 +1,7 @@
 #include <iostream>
 #include <vector>
 using namespace std;
-
+// 递归通过build heapify sort实现  迭代方式的add还有bug
 class Heap
 {
 public:
@@ -9,7 +9,6 @@ public:
     {
         return nums.size();
     }
-    vector<int> nums;
     int top()
     {
         if (nums.size() == 0)
@@ -23,6 +22,10 @@ public:
         return size() == 0 ? true : false;
     }
     Heap() {}
+    Heap(vector<int> nums) {
+        this->nums = nums;
+        buildHeap(this->nums, nums.size());
+    }
     ~Heap() {}
     void heapsort()
     {
@@ -66,6 +69,7 @@ public:
     }
 
 private:
+    vector<int> nums;
     void heapify(vector<int> &nums, int len, int i)
     {
         int l = i * 2 + 1, r = i * 2 + 2;
@@ -101,14 +105,20 @@ int main()
     cout << heap.empty() << endl;
     cout << heap.size() << endl;
     cout << heap.top() << endl;
-
+    vector<int> test2 = {5,3,18,20,1,2, 29, 12};
+    Heap heap2(test2);
     heap.add(5);
     heap.add(4);
     heap.add(18);
     heap.add(20);
     heap.add(1);
+    heap.print();
     heap.heapsort();
     heap.print();
+
+    heap2.print();
+    heap2.heapsort();
+    heap2.print();
     cout << heap.size() << endl;
     cout << heap.top() << endl;
 
