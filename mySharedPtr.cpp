@@ -12,7 +12,6 @@ namespace fc {
         }
     };
 
-
     template<typename T, typename deleter = default_deleter<T>>
     class shared_ptr{
     private:
@@ -39,7 +38,7 @@ namespace fc {
         T* operator->();
         // 解引用运算符
         T& operator*();
-
+        // 重载到bool的隐式转换
         operator bool() const;
         // 交换
         void swap(shared_ptr & lsh);
